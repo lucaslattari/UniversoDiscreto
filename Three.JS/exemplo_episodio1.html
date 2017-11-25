@@ -1,0 +1,46 @@
+<!DOCTYPE html> <!-- Codificação da fonte-->
+<html>
+	<head>
+		<meta charset=utf-8> <!-- Codificação da fonte-->
+		<title>Meu primeiro exemplo three.js.</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/build/three.js"></script> <!-- three js é carregada aqui -->
+		<script>
+			var scene = new THREE.Scene(); <!-- cena -->
+			
+			<!--ângulo de abertura da câmera, aspect ration, near e far-->
+			var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+			
+			<!--Renderer-->
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight); <!-- área do browser "preenchida" -->
+			document.body.appendChild(renderer.domElement); <!-- adiciona o renderer ao documento HTML -->
+			
+			<!-- criando um cubo -->
+			var geometry = new THREE.BoxGeometry(1, 1, 1); <!-- quadrilátero com largura, altura e profundidade determinadas -->
+			var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); <!-- material definindo a cor do cubo -->
+			var cube = new THREE.Mesh(geometry, material); <!-- Mesh é uma malha que contém uma geometria e um material, sendo passível de ser inserida na cena -->
+			scene.add(cube); <!-- cubo é inserido na cena -->
+			
+			<!-- move a câmera um pouco para trás-->
+			camera.position.z = 5;
+			
+			<!-- renderiza na tela-->
+			function animate() {
+			<!-- fala para o navegador que deseja-se realizar uma animação e pede que o navegador chame uma função específica para atualizar um quadro de animação-->
+				requestAnimationFrame( animate );
+				
+				cube.rotation.x += 0.1;
+				
+				renderer.render( scene, camera );
+			};
+			
+			animate();
+		</script>
+	</body>
+</html>
