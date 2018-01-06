@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>Incluir câmera trackball.</title>
+		<style>
+			body { margin: 0;}
+			canvas { width: 100%; height: 100%; }
+		</style>
+	</head>
+	<body>
+	<!-- three.js -->
+	<script src="js/build/three.js"></script>
+	
+	<!-- incluir biblioteca de interface gráfica -->
+	<script src="dat.gui.js"></script>
+	
+	<!-- incluir a biblioteca do trackball -->
+	<script src="js/examples/js/controls/TrackballControls.js"></script>
+	<script>
+	function init()
+	{
+		<!-- variável que armazena instantes de tempo da aplicação -->
+		var clock = new THREE.Clock();
+		
+		<!--cena-->
+		var scene = new THREE.Scene();
+		
+		<!--camera-->
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		<!--posicionar a câmera-->
+		camera.position.z = 5;
+		
+		<!--renderer-->
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+		
+		<!--criando um cubo que gira-->
+		var geometry = new THREE.BoxGeometry(1, 2, 1);
+		var material = new THREE.MeshBasicMaterial({color: 0xff00ff});
+		var cube = new THREE.Mesh(geometry, material);
+		scene.add(cube);	
+
+		<!-- adicionar eixos -->
+		var axes = new THREE.AxisHelper(20);
+		scene.add(axes);
+		
+		/*******************TRACKBALL**********************/
+		/**************************************************/
+		var trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+		trackballControls.rotateSpeed = 1.0;
+		trackballControls.zoomSpeed = 1.0;
+		trackballControls.panSpeed = 1.0;
+		
+		/*******************GUI****************************/
+		/**************************************************/
+		var controls = new function()
+		{
+			this.rotationSpeed 	= 1.0;
+			this.zoomSpeed 		= 1.0;
+			this.panSpeed 		= 1.0;
+		};
+		
+		var gui = new dat.GUI(
+			{autoplace: false, width: 300}
+		);
+		gui.add(controls, 'rotationSpeed', 0, 5.0);
+		gui.add(controls, 'zoomSpeed', 0, 5.0);
+		gui.add(controls, 'panSpeed', 0, 5.0);
+		
+		function animate()
+		{
+			<!--tempo passado entre o último frame e o frame atual-->
+			var delta = clock.getDelta();
+			
+			<!-- atualiza posição da câmera -->
+			trackballControls.update(delta);
+		
+			<!-- atualizo a câmera com a escolha da GUI -->
+			trackballControls.rotateSpeed = controls.rotationSpeed;
+			trackballControls.zoomSpeed = controls.zoomSpeed;
+			trackballControls.panSpeed = controls.panSpeed;
+		
+			requestAnimationFrame(animate);
+			cube.rotation.z += 0.1;
+			renderer.render(scene, camera);
+		}
+		
+		animate();
+	}
+	window.onload = init;
+	</script>
+	</body>
+</html>
