@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Episódio 1 - Canal Universo Discreto</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="principal">
+      <!--aqui vamos desenhar as coisas-->
+    </div>
+    <script type="text/babel">  //aqui tudo vai ser compilado pelo babel
+      //processa todos os elementos exibidos na tela
+      function renderAll()
+      {
+        //formatar o nome de uma pessoa
+        function formatName(user)
+        {
+          return user.firstName + " " + user.lastName;
+        }
+
+        //estou definindo o nome de uma pessoa como uma constante
+        const user =
+        {
+          firstName: 'Lucas',
+          lastName: 'Lattari'
+        };
+
+        //const user = "";
+
+        //função que retorna as horas formatadas
+        function getSystemTime()
+        {
+          const element =
+          (
+            <div>
+              São{' '}
+              {new Date().toLocaleTimeString()}.
+            </div>
+          );
+          return element;
+        }
+
+        //função que faz a pessoa receber uma mensagem de boas vindas
+        function getGreeting()
+        {
+          if(user)
+          {
+            return <h1>Olá, {formatName(user)}! {getSystemTime()}</h1>
+          }
+          return <h1>Olá, pessoa desconhecida. {getSystemTime()}</h1>
+        }
+
+        const elementHtml =
+        (
+            <div>{getGreeting(user)}</div>
+        );
+
+        //renderiza o elemento que passarmos no primeiro parâmetro dentro da
+        //região informada no segundo parâmetro
+        ReactDOM.render(
+          elementHtml,
+          document.getElementById('principal')
+        );
+      }
+
+      setInterval(renderAll, 1000);
+    </script>
+  </body>
+</html>
