@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Episódio 2 - Canal Universo Discreto</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+    <style>
+      .Personagem {
+        /* distância horizontal da sombra, distância vertical da sombra, raio do blur, tamanho da sombra, cor */
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        width: 75%;
+      }
+      .Personagem:hover{
+        /* distância horizontal da sombra, distância vertical da sombra, raio do blur, tamanho da sombra, cor */
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      }
+    }
+    </style>
+  </head>
+  <body>
+    <div id="principal" />
+
+    <script type="text/babel">  //aqui tudo vai ser compilado pelo babel
+    function RenderAll()
+    {
+        function Personagem(props)
+        {
+          return(
+            <div class="Personagem">
+              <img src={props.file} alt={props.name} width="20%" height="20%"/>
+                <p>Nome: {props.name}</p>
+                <p>Frase: {props.frase}!</p>
+            </div>
+          ) ;
+        }
+
+        function App()
+        {
+          return(
+            <div>
+              <Personagem name="Goku" file="goku.png" frase="Oi, eu sou o Goku!" />
+              <Personagem name="Vegeta" file="vegeta.png" frase="Seu verme insolente!" />
+              <Personagem name="Gohan" file="gohan.jpg" frase="Papaaaaaaaaai!" />
+            </div>
+          );
+        }
+
+        ReactDOM.render(
+          <App />,
+          document.getElementById("principal")
+        );
+    }
+
+    RenderAll();
+    </script>
+  </body>
+</html>
