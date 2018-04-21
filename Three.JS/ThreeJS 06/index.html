@@ -1,0 +1,205 @@
+<!DOCTYPE html> <!-- Codificação da fonte-->
+<html>
+	<head>
+		<meta charset=utf-8> <!-- Codificação da fonte-->
+		<title>Motor do Quake 3.</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<!-- three js é carregada aqui -->
+		<script src="js/build/three.js"></script>
+
+		<!-- interface gráfica na tela -->
+		<script src="dat.gui.js"></script>
+
+		<!-- Importa módulo de fly da three.js -->
+		<script src="js/examples/js/controls/FlyControls.js"></script>
+
+		<!-- Adição de biblioteca que conta FPS -->
+		<script src="stats_js/build/stats.js"></script>
+
+		<!-- Carrega dados da BSP -->
+		<script src="bsp.js"></script>
+
+		<script>
+			//INSERE FPS
+			var stats = new Stats();
+			stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+			document.body.appendChild(stats.dom);
+
+			var clock;
+			function initClock()
+			{
+				clock = new THREE.Clock();
+			}
+
+			var scene;
+			function initScene()
+			{
+				scene = new THREE.Scene();
+			}
+
+			function initCameraFly()
+			{
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000); //ângulo de abertura da câmera, aspect ration, near e far-
+				camera.position.x = 0;
+				camera.position.y = 0;
+				camera.position.z = -700;
+				camera.lookAt(new THREE.Vector3(0, 0, 0));
+			}
+
+			var renderer;
+			function initRenderer()
+			{
+				renderer = new THREE.WebGLRenderer();
+ 				renderer.setSize(window.innerWidth, window.innerHeight); //área do browser "preenchida"
+ 				document.body.appendChild(renderer.domElement); //adiciona o renderer ao documento HTML
+			}
+
+			var axes;
+			function addAxisInScene()
+			{
+				axes = new THREE.AxisHelper(20);
+				scene.add(axes);
+			}
+
+			function addBSPInScene()
+			{
+				readTextFile("bspdata.json", function(text){
+				    data = JSON.parse(text);
+						BSPdata 	= data[0];
+						faces 		= BSPdata[0];
+						vertices 	= BSPdata[1];
+
+						faces.forEach(function(face)
+						{
+							faceType 				= face[0];
+							firstVertex 		= face[1];
+							totalVertices 	= face[2];
+
+							//somente trabalhamos com polygons no momento
+							if(faceType == 1)
+							{
+								var geometry = new THREE.Geometry();
+								for (var i = firstVertex ; i < firstVertex + totalVertices ; i++)
+								{
+										geometry.vertices.push(new THREE.Vector3(vertices[i][0], vertices[i][1], vertices[i][2]));
+								}
+
+								for(var i = 0 ; i < totalVertices ; i++)
+								{
+									for(var j = i + 1 ; j < totalVertices ; j++)
+									{
+										for(var k = j + 1 ; k < totalVertices ; k++)
+										{
+												geometry.faces.push(new THREE.Face3(i, j, k));
+										}
+									}
+								}
+
+								geometry.computeFaceNormals();
+
+								var material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
+								var faceShape = new THREE.Mesh(geometry, material);
+								scene.add(faceShape);
+							}
+						});
+				});
+			}
+
+			var flyControls;
+			function startFlyCamera()
+			{
+				//criando uma região que vai conter a câmera
+				var container = document.createElement('div');
+				document.body.appendChild(container);
+
+				flyControls = new THREE.FlyControls(camera, renderer.domElement);
+				flyControls.movementSpeed = 100;
+				flyControls.domElement = container;
+				flyControls.rollSpeed = Math.PI / 24;
+				flyControls.autoForward = false;
+				flyControls.dragToLook = false;
+
+				container.appendChild(renderer.domElement);
+			}
+
+			function startGUIOfFlyCamera()
+			{
+				controls = new function()
+				{
+					this.movementSpeed	= 100.0;
+					this.rollSpeed 			= Math.PI / 24;
+					this.autoForward		= false;
+					this.dragToLook 		= false;
+				};
+
+				gui = new dat.GUI(
+					<!--autoplace: permitir ao browser colocar o cursor automaticamente -->
+					{autoplace: false, width: 300}
+				);
+				gui.add(controls, 'movementSpeed', 0, 200.0);
+				gui.add(controls, 'rollSpeed', 0, Math.PI);
+				gui.add(controls, 'autoForward');
+				gui.add(controls, 'dragToLook');
+			}
+
+			function startFlyApplication()
+			{
+				initClock();
+				initScene();
+				initCameraFly();
+				initRenderer();
+				addAxisInScene();
+				addBSPInScene();
+				startFlyCamera();
+				startGUIOfFlyCamera();
+			}
+
+			function updateFlyCamera(delta)
+			{
+				if(flyControls == null)
+				{
+					return;
+				}
+
+				<!-- atualiza a posição da câmera -->
+				flyControls.update(delta);
+
+				<!-- atualiza valores da câmera -->
+				flyControls.movementSpeed 		= controls.movementSpeed;
+				flyControls.rollSpeed 				= controls.rollSpeed;
+				flyControls.autoForward 	 		= controls.autoForward;
+				flyControls.dragToLook 				= controls.dragToLook;
+			}
+
+			<!-- renderiza na tela-->
+			function render() {
+
+				stats.begin();
+
+				<!--tempo passado entre última chamada dessa mesma linha e a de agora-->
+				var delta = clock.getDelta();
+
+				//normalmente passamos 1/60, assumindo 60fps, mas não temos
+				//como garantir isso. sendo assim, passamos o tempo passado
+				//entre um frame e outro
+				updateFlyCamera(delta);
+
+				renderer.render(scene, camera);
+
+				stats.end();
+
+				<!-- fala para o navegador que deseja-se realizar uma animação e pede que o navegador chame uma função específica para atualizar um quadro de animação-->
+				requestAnimationFrame(render);
+			};
+
+			startFlyApplication();
+			render();
+
+		</script>
+	</body>
+</html>
