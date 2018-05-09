@@ -1,0 +1,10 @@
+html{
+  font: 14px Arial, sans-serif;
+  color: #626771;
+}
+
+body{
+  /*gera espaço ao longo do conteúdo do elemento, por cima, por baixo e pelos lados*/
+  padding: 60px;
+  text-align: center;
+}
