@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1527991517 source:c:\users\lucas\obi\xadrez\xadrez.cpp
+	<stdio.h>
+
+1528062206 source:c:\obi\xadrez\xadrez.cpp
+	<stdio.h>
+	<string.h>
+

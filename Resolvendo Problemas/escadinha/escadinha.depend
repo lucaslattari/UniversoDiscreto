@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1527957195 source:c:\users\lucas\obi\escadinha\main.cpp
+	<stdio.h>
+
+1528061131 source:c:\obi\escadinha\escadinha.cpp
+	<stdio.h>
+
