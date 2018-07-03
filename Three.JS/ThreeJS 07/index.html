@@ -1,0 +1,274 @@
+<!DOCTYPE html> <!-- Codificação da fonte-->
+<html>
+	<head>
+		<meta charset=utf-8> <!-- Codificação da fonte-->
+		<title>Exemplos envolvendo materiais.</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<!-- three js é carregada aqui -->
+		<script src="js/build/three.js"></script>
+
+		<!-- interface gráfica na tela -->
+		<script src="dat.gui.js"></script>
+
+		<!-- Importa módulo de trackball da three.js -->
+		<script src="js/examples/js/controls/TrackballControls.js"></script>
+
+		<!-- Importa módulo de fly da three.js -->
+		<script src="js/examples/js/controls/FlyControls.js"></script>
+
+		<script>
+			var clock;
+			function initClock()
+			{
+				clock = new THREE.Clock();
+			}
+
+			var scene;
+			function initScene()
+			{
+				scene = new THREE.Scene();
+			}
+
+			var camera;
+			function initCameraTrackball()
+			{
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); //ângulo de abertura da câmera, aspect ration, near e far-
+				camera.position.z = 5; //movimenta a câmera um pouco pra frente
+			}
+
+			function initCameraFly()
+			{
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); //ângulo de abertura da câmera, aspect ration, near e far-
+				camera.position.x = 100;
+				camera.position.y = 100;
+				camera.position.z = 300;
+				camera.lookAt(new THREE.Vector3(0, 0, 0));
+			}
+
+			var renderer;
+			function initRenderer()
+			{
+				renderer = new THREE.WebGLRenderer({antialias: true});
+				renderer.setPixelRatio(window.devicePixelRatio); //seta razão de pixel, usualmente definido pra prevenir borramento
+				//window.devicePixelRatio retorna a razão do tamanho vertical de um pixel físico pelo tamanho de um pixel css
+ 				renderer.setSize(window.innerWidth, window.innerHeight); //área do browser "preenchida"
+ 				document.body.appendChild(renderer.domElement); //adiciona o renderer ao documento HTML
+			}
+
+			var cube;
+			function addCubeInScene()
+			{
+				var geometry = new THREE.BoxGeometry(200, 200, 200); //quadrilátero com largura, altura e profundidade determinadas
+				var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); //material definindo a cor do cubo
+				cube = new THREE.Mesh(geometry, material); //Mesh é uma malha que contém uma geometria e um material, sendo passível de ser inserida na cena
+				scene.add(cube); //cubo é inserido na cena
+			}
+
+			function addCubeWithTextureInScene()
+			{
+				var texture = new THREE.TextureLoader().load('textures/crate.gif');
+				var geometry = new THREE.BoxGeometry(200, 200, 200); //quadrilátero com largura, altura e profundidade determinadas
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+				cube = new THREE.Mesh(geometry, material);
+				scene.add(cube);
+			}
+
+			function addCubeWithRandomColorsInScene()
+			{
+				var geometry = new THREE.BoxGeometry(200, 200, 200);
+				for (var i = 0; i < geometry.faces.length; i+=2)
+				{
+					var hex = Math.random() * 0xffffff;
+					geometry.faces[i].color.setHex(hex);
+					geometry.faces[i + 1].color.setHex(hex);
+				}
+				var material = new THREE.MeshBasicMaterial( {vertexColors: THREE.FaceColors} );
+
+				cube = new THREE.Mesh(geometry, material);
+				scene.add(cube);
+			}
+
+			var sphere;
+			function addPhongSphereinScene()
+			{
+				var light = new THREE.DirectionalLight(0xffffff);
+				light.position.set(0, 0, 1).normalize();
+				scene.add(light);
+
+				var geometry = new THREE.SphereBufferGeometry(100, 32, 32);
+				var material = new THREE.MeshPhongMaterial( {color: 0xff0000} );
+				sphere = new THREE.Mesh(geometry, material);
+				scene.add(sphere);
+			}
+
+			var axis;
+			function addAxisInScene()
+			{
+				axis = new THREE.AxisHelper(200);
+				scene.add(axis);
+			}
+
+			var trackballControls;
+			function startTrackballCamera()
+			{
+				trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+				trackballControls.rotateSpeed 	= 1.0;
+				trackballControls.zoomSpeed 	= 1.0;
+				trackballControls.panSpeed 		= 1.0;
+				trackballControls.noZoom		= false;
+			}
+
+			var flyControls;
+			function startFlyCamera()
+			{
+				//criando uma região que vai conter a câmera
+				var container = document.createElement('div');
+				document.body.appendChild(container);
+
+				flyControls = new THREE.FlyControls(camera, renderer.domElement);
+				flyControls.movementSpeed = 25;
+				flyControls.domElement = container;
+				flyControls.rollSpeed = Math.PI / 24;
+				flyControls.autoForward = false;
+				flyControls.dragToLook = false;
+
+				container.appendChild(renderer.domElement);
+			}
+
+			var controls, gui;
+			function startGUIOfTrackballCamera()
+			{
+				controls = new function ()
+				{
+					this.rotationSpeed 		= 1.0;
+					this.zoomSpeed 				= 1.0;
+					this.panSpeed					= 1.0;
+				};
+
+				gui = new dat.GUI(
+					//autoplace: permitir ao browser colocar o cursor automaticamente
+					{autoplace: false, width: 300}
+				);
+				gui.add(controls, 'rotationSpeed', 0, 5.0);
+				gui.add(controls, 'zoomSpeed', 0, 5.0);
+				gui.add(controls, 'panSpeed', 0, 5.0);
+			}
+
+			function startGUIOfFlyCamera()
+			{
+				controls = new function()
+				{
+					this.movementSpeed	= 25.0;
+					this.rollSpeed 			= Math.PI / 24;
+					this.autoForward		= false;
+					this.dragToLook 		= false;
+				};
+
+				gui = new dat.GUI(
+					//autoplace: permitir ao browser colocar o cursor automaticamente
+					{autoplace: false, width: 300}
+				);
+				gui.add(controls, 'movementSpeed', 0, 50.0);
+				gui.add(controls, 'rollSpeed', 0, Math.PI);
+				gui.add(controls, 'autoForward');
+				gui.add(controls, 'dragToLook');
+			}
+
+			function startTrackballApplication()
+			{
+				initClock();
+				initScene();
+				initCameraTrackball();
+				initRenderer();
+				addCubeInScene();
+				addAxisInScene();
+				startTrackballCamera();
+				startGUIOfTrackballCamera();
+			}
+
+			function startFlyApplication()
+			{
+				initClock();
+				initScene();
+				initCameraFly();
+				initRenderer();
+				//addCubeInScene();
+				//addCubeWithTextureInScene();
+				//addCubeWithRandomColorsInScene();
+				addPhongSphereinScene();
+				//addAxisInScene();
+				startFlyCamera();
+				startGUIOfFlyCamera();
+			}
+
+			function updateTrackBallCamera(delta)
+			{
+				if(trackballControls == null)
+				{
+					return;
+				}
+
+				<!-- atualiza a posição da câmera -->
+				trackballControls.update(delta);
+
+				<!-- atualiza valores da câmera -->
+				trackballControls.rotateSpeed 	= controls.rotationSpeed;
+				trackballControls.zoomSpeed 	= controls.zoomSpeed;
+				trackballControls.panSpeed 		= controls.panSpeed;
+			}
+
+			function updateFlyCamera(delta)
+			{
+				if(flyControls == null)
+				{
+					return;
+				}
+
+				<!-- atualiza a posição da câmera -->
+				flyControls.update(delta);
+
+				<!-- atualiza valores da câmera -->
+				flyControls.movementSpeed 		= controls.movementSpeed;
+				flyControls.rollSpeed 				= controls.rollSpeed;
+				flyControls.autoForward 	 		= controls.autoForward;
+				flyControls.dragToLook 				= controls.dragToLook;
+			}
+
+			//renderiza na tela
+			function render() {
+				//tempo passado entre última chamada dessa mesma linha e a de agora
+				var delta = clock.getDelta();
+
+				//normalmente passamos 1/60, assumindo 60fps, mas não temos
+				//como garantir isso. sendo assim, passamos o tempo passado
+				//entre um frame e outro
+				//updateTrackBallCamera(delta);
+				updateFlyCamera(delta);
+
+				//fala para o navegador que deseja-se realizar uma animação e pede que o navegador chame uma função específica para atualizar um quadro de animação
+				requestAnimationFrame(render);
+				if(cube != null)
+				{
+					cube.rotation.x += 0.01;
+					cube.rotation.y += 0.01;
+				}
+				if(sphere != null)
+				{
+					sphere.rotation.x += 0.01;
+					sphere.rotation.y += 0.01;
+				}
+
+				renderer.render(scene, camera);
+			};
+
+			startFlyApplication();
+			render();
+
+		</script>
+	</body>
+</html>
