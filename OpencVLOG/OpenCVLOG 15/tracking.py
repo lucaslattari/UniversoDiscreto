@@ -10,12 +10,12 @@ while (True):
 
     #transforma a imagem de RGB para HSV
     hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    #intervalo de rosa mínimo e rosa máximo
-    lowerPink = np.array([150, 50, 50])
-    upperPink = np.array([200, 255, 255])
+    #intervalo de vermelho mínimo e rosa máximo
+    lowerRed = np.array([150, 0, 0])
+    upperRed = np.array([200, 255, 255])
 
     #identificação da área da embalagem
-    mask = cv2.inRange(hsvImage, lowerPink, upperPink)
+    mask = cv2.inRange(hsvImage, lowerRed, upperRed)
     #bitwise_and(primeira matriz a ser operada, segunda matriz a ser operada, 
     #especifica elementos da saida que devem ser alterados)
     #
@@ -55,7 +55,7 @@ while (True):
         cnt = contours[contourId]
         #retorna um retângulo que envolve o contorno em questão
         x,y,w,h = cv2.boundingRect(cnt)
-        if(maxArea > 70.0):
+        if(maxArea > 100.0):
             #desenha o retângulo vermelho com espessura 3
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),3)     
     
