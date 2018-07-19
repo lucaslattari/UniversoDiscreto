@@ -11,8 +11,8 @@ while (True):
     #transforma a imagem de RGB para HSV
     hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #intervalo de vermelho mínimo e rosa máximo
-    lowerRed = np.array([150, 0, 0])
-    upperRed = np.array([200, 255, 255])
+    lowerRed = np.array([25, 50, 0])
+    upperRed = np.array([50, 255, 255])
 
     #identificação da área da embalagem
     mask = cv2.inRange(hsvImage, lowerRed, upperRed)
