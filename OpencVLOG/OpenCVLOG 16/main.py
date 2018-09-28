@@ -19,27 +19,28 @@ from PIL import Image
 import pytesseract as pyt
 import cv2
 import os
-import numpy as np
 
 if __name__ == "__main__":
     
-    #carrega a imagem em preto e branco
-    imagemPlaca = cv2.imread("texto2.png")
+    #carrega a imagem colorida
+    imagem = cv2.imread("texto.png")
     
-    #salva a imagem contendo a placa em um arquivo temporário do Windows para aplicar OCR
-    filenameImagemPlaca = "{}.png".format(os.getpid())
-    cv2.imwrite(filenameImagemPlaca, imagemPlaca)
+    #salva a imagem em um arquivo temporário do Windows para aplicar OCR
+    filenameImagem = "{}.png".format(os.getpid())
+    cv2.imwrite(filenameImagem, imagem)
     
     #carrega a imagem usando a biblioteca PIL/Pillow e aplica OCR
-    textoPlaca = pyt.image_to_string(Image.open(filenameImagemPlaca))
+    texto = pyt.image_to_string(Image.open(filenameImagem))
 
     #deleta arquivo temporário
-    os.remove(filenameImagemPlaca)
+    os.remove(filenameImagem)
     
-    print("Texto: " + textoPlaca)
+    print("Texto: " + texto)
 
-    imagemPlaca = cv2.resize(imagemPlaca,None,fx=1, fy=1, interpolation = cv2.INTER_CUBIC)
+    #redimensiona só pra ser exibido ao final
+    imagem = cv2.resize(imagem,None,fx=0.25, fy=0.25, interpolation = cv2.INTER_CUBIC)
 
-    cv2.imshow("imagem contendo o texto", imagemPlaca)
+    #exibe a imagem
+    cv2.imshow("imagem contendo o texto", imagem)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
