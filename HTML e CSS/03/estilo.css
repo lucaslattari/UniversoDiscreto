@@ -1,0 +1,48 @@
+body{
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+#tudo{
+  width: 100%;
+  margin: 0 auto;
+}
+
+#topo{
+  height: 10%;
+  background: #ffd18b;
+}
+
+#conteudos{
+  width: 85%;
+  float: right;
+}
+
+#principal{
+  float: left;
+  width: 65%;
+  height: 80%;
+  background: #d1e6fc;
+  padding: 0 5%;
+}
+
+#auxiliar{
+  float: right;
+  width: 25%;
+  height: 80%;
+  background: #ccc;
+}
+
+#navegacao{
+  float: left;
+  width: 15%;
+  height: 80%;
+  background: #a2daec;
+}
+
+#rodape{
+  clear: both;
+  height: 3%;
+  background: #ffecd1;
+}
