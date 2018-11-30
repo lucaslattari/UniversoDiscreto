@@ -1,0 +1,51 @@
+form{
+  width: 63%;
+  margin: 0 auto;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #b00;
+}
+
+form fieldset{
+  background: #cceecc url(bg-form.jpg) repeat-x bottom;
+  border: 1px solid #090;
+  padding: 0.5em 0.5em;
+}
+
+form legend{
+  background: #fbe;
+  color: #c30;
+  padding: 0 0.5em;
+  border: 1px solid #0c0;
+}
+
+div #formulario{
+  float: left;
+}
+
+form label{
+  display: block;
+  width: 8em;
+  margin-bottom: 0.4em;
+}
+
+form input{
+  display: block;
+  width: 20em;
+  margin-bottom: 1em;
+  border: 1px solid #ccc;
+  background: #fef;
+}
+
+form input#enviar{
+  float: right;
+  margin-top: 1em;
+  width: auto;
+}
+
+form textarea{
+  background: #fef;
+  border: 1px solid #ccc;
+  display: block;
+  width: 20em;
+}
