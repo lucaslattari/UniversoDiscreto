@@ -2,13 +2,14 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-baseDeDados = pd.read_csv('svbr.csv', delimiter=';')
-X = baseDeDados.iloc[:,:].values
+baseDeDados = pd.read_csv('admission.csv', delimiter=';')
+X = baseDeDados.iloc[:,:-1].values
+y = baseDeDados.iloc[:,-1].values
 
+from sklearn.impute import SimpleImputer
 imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-imputer = imputer.fit(X[:,1:3])
-X = imputer.transform(X[:,1:3]).astype(str)
-X = np.insert(X, 0, baseDeDados.iloc[:,0].values, axis=1)
+imputer = imputer.fit(X[:,1:])
+X = imputer.transform(X[:,1:])
 
 from sklearn.preprocessing import LabelEncoder
 labelencoder_X = LabelEncoder()
@@ -17,4 +18,7 @@ X = X[:,1:]
 
 D = pd.get_dummies(X[:,0])
 X = np.insert(X, 0, D.values, axis=1)
-print(X)
+
+from sklearn.model_selection import train_test_split
+XTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size = 0.2)
+print(XTrain)
