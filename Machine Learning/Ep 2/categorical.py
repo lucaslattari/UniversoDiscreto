@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-baseDeDados = pd.read_csv('admission.csv', delimiter=';')
 X = baseDeDados.iloc[:,:-1].values
 y = baseDeDados.iloc[:,-1].values
 
