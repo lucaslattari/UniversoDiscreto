@@ -4,16 +4,14 @@ import pandas as pd
 def loadDataSet(filename):
     print("Carregando a base de dados...")
     baseDeDados = pd.read_csv(filename, delimiter=';')
-    X = baseDeDados.iloc[:,:-1].values
-    y = baseDeDados.iloc[:,-1].values
     print("ok!")
-    return X, y
+    return baseDeDados
 
 def fillMissingData(X):
     print("Preenchendo dados que estão faltando...")
     from sklearn.impute import SimpleImputer
     imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    X[:,1:] = imputer.fit_transform(X[:,1:])
+    X = imputer.fit_transform(X)
     print("ok!")
     return X
 
@@ -55,20 +53,19 @@ def computeLinearRegression(XTrain, yTrain, XTest, yTest):
     yPred = regressor.predict(XTest)
     print("ok!")
 
-    print(XTest[:,-1])
+    print(XTest)
 
-    plt.scatter(XTest[:,-1], yTest, color = 'red')
-    plt.plot(XTest[:,-1], regressor.predict(XTest), color='blue')
+    plt.scatter(XTest, yTest, color = 'red')
+    plt.plot(XTest, regressor.predict(XTest), color='blue')
     plt.title("Inscritos x Visualizações")
     plt.xlabel("Inscritos")
     plt.ylabel("Visualizações")
     plt.show()
 
 def runLinearRegressionExample():
-    X, y = loadDataSet("svbr.csv")
-    X = fillMissingData(X)
-    X = computeCategorization(X)
-    XTrain, XTest, yTrain, yTest = splitTrainTestSets(X, y, 0.8)
+    baseDeDados = loadDataSet("svbr.csv")
+    baseDeDados.loc[:,('Inscritos',)] = fillMissingData(baseDeDados.loc[:,('Inscritos',)])
+    XTrain, XTest, yTrain, yTest = splitTrainTestSets(baseDeDados.loc[:,('Inscritos',)], baseDeDados.loc[:,('Visualizações')], 0.8)
     computeLinearRegression(XTrain, yTrain, XTest, yTest)
 
 if __name__ == "__main__":
