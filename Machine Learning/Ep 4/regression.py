@@ -15,17 +15,19 @@ def fillMissingData(X):
     print("ok!")
     return X
 
-def computeCategorization(X):
+def computeCategorization(baseDeDados, compute):
     print("Computando rotulação...")
     from sklearn.preprocessing import LabelEncoder
     labelencoder_X = LabelEncoder()
-    X[:, 0] = labelencoder_X.fit_transform(X[:, 0])
+    for (name, data) in compute.iteritems():
+        data = labelencoder_X.fit_transform(data)
+        D = pd.get_dummies(data).iloc[:,1:]
+        baseDeDados = baseDeDados.drop(name,axis=1)
+        for (i, data) in D.iteritems():
+            baseDeDados.insert(0,name+'_'+str(i),data)
 
-    D = pd.get_dummies(X[:,0])
-    X = X[:,1:]
-    X = np.insert(X, 0, D.values, axis=1)
     print("ok!")
-    return X
+    return baseDeDados
 
 def splitTrainTestSets(X, y, testSize):
     print("Separando conjuntos de teste e treino...")
