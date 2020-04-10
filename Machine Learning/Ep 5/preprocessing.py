@@ -3,38 +3,25 @@ import pandas as pd
 
 def loadDataset(filename):
     baseDeDados = pd.read_csv(filename, delimiter=';')
-    X = baseDeDados.iloc[:,:-1].values
-    y = baseDeDados.iloc[:,-1].values
-    return X, y
+    return baseDeDados
 
-def fillMissingData(X, inicioColuna, fimColuna):
+def fillMissingData(X):
     from sklearn.impute import SimpleImputer
     imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    X[:,inicioColuna:fimColuna + 1] = imputer.fit_transform(X[:,inicioColuna:fimColuna + 1])
+    X = imputer.fit_transform(X)
     return X
 
-#só funciona se i = 0 ou i = ultima coluna
-def computeCategorization(X, i):
+def computeCategorization(baseDeDados, compute):
     from sklearn.preprocessing import LabelEncoder
     labelencoder_X = LabelEncoder()
-    X[:, i] = labelencoder_X.fit_transform(X[:, i])
+    for (name, data) in compute.iteritems():
+        data = labelencoder_X.fit_transform(data)
+        D = pd.get_dummies(data).iloc[:,1:]
+        baseDeDados = baseDeDados.drop(name,axis=1)
+        for (i, data) in D.iteritems():
+            baseDeDados.insert(0,name+'_'+str(i),data)
 
-    #one hot encoding
-    D = pd.get_dummies(X[:,i]).values
-    if(i == 0):
-        X = X[:,1:]
-        X = np.insert(X, 0, D, axis=1)
-
-        #removendo dummy variable trap
-        X = X[:,1:]
-    else:
-        X = X[:,:i]
-        for j in range(0, D.shape[1]):
-            X = np.insert(X, i, D[:,j], axis=1)
-
-        #removendo dummy variable trap
-        X = X[:,:-1]
-    return X
+    return baseDeDados
 
 def splitTrainTestSets(X, y, testSize):
     from sklearn.model_selection import train_test_split
